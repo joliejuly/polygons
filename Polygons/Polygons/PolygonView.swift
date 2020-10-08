@@ -12,14 +12,14 @@ final class PolygonView: UIView {
     private lazy var polygonLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         
-        layer.lineWidth = 3
-        layer.miterLimit = 100
+        layer.lineWidth = 10
+        layer.miterLimit = 0
         
         layer.lineJoin = .round
         layer.lineCap = .round
         layer.strokeColor = UIColor.systemPink.cgColor
         
-        layer.fillRule = .evenOdd
+        //layer.fillRule = .evenOdd
         layer.fillColor = UIColor.systemPink.cgColor
         
         return layer
@@ -110,7 +110,7 @@ final class PolygonView: UIView {
         for side in 0..<sidesCount {
             
             let percent: CGFloat = CGFloat.random(in: -1...1)
-            let blobRadius: CGFloat = CGFloat.random(in: radius...radius * 1.5) * (1 + percent)
+            let blobRadius: CGFloat = radius * (1 + percent)
             
             let cgSide = CGFloat(side)
             let cgSideCount = CGFloat(sidesCount)
@@ -151,7 +151,7 @@ final class PolygonView: UIView {
     private func catmullRomSmoothPath(path: UIBezierPath?) -> UIBezierPath? {
         guard let path = path else { return nil }
         
-        let granularity = 100
+        let granularity = 50
         
         var points = path.cgPath.points()
         
