@@ -44,7 +44,9 @@ final class PolygonView: UIView {
     
     func showBlob(sidesCount: Int) {
         guard let path = makeBlob(sidesCount:sidesCount) else { return }
-        polygonLayer.path = path.cgPath
+        
+        let smoothed = catmullRomSmoothPath(path: path)
+        polygonLayer.path = smoothed?.cgPath
     }
 
     private func makePolygon(sidesCount: Int) -> UIBezierPath? {
@@ -149,9 +151,63 @@ final class PolygonView: UIView {
     private func catmullRomSmoothPath(path: UIBezierPath?) -> UIBezierPath? {
         guard let path = path else { return nil }
         
+        let granularity = 100
         
-        let points = path.cgPath.points()
+        var points = path.cgPath.points()
         
-        return nil
+        points.insert(points.first!, at: 0)
+        points.append(points.last!)
+        
+        let smoothedPath = UIBezierPath()
+        smoothedPath.lineWidth = path.lineWidth
+        
+        // draw first three points
+        
+        smoothedPath.move(to: points.first!)
+        
+        for index in 1...3 {
+            let point = points[index]
+            smoothedPath.addLine(to: point)
+        }
+        
+        // draw other points
+        
+        for index in 4..<points.count {
+            let point0 = points[index - 3]
+            let point1 = points[index - 2]
+            let point2 = points[index - 1]
+            let point3 = points[index]
+            
+            for granularityValue in 1..<granularity {
+                let t = CGFloat(granularityValue) * (1.0 / CGFloat(granularity))
+                let tt = t * t
+                let ttt = tt * t
+                
+                // intermediate point
+                var point = CGPoint()
+                
+                let xPlain = 2 * point1.x + (point2.x - point0.x) * t
+                let xQuadripled = (2 * point0.x - 5 * point1.x + 4 * point2.x - point3.x) * tt
+                let xCubed = (3 * point1.x - point0.x - 3 * point2.x + point3.x) * ttt
+    
+                point.x = 0.5 * (xPlain + xQuadripled + xCubed)
+                
+                
+                let yPlain = 2 * point1.y + (point2.y - point0.y) * t
+                let yQuadripled = (2 * point0.y - 5 * point1.y + 4 * point2.y - point3.y) * tt
+                let yCubed = (3 * point1.y - point0.y - 3 * point2.y + point3.y) * ttt
+                
+                point.y = 0.5 * (yPlain + yQuadripled + yCubed)
+                
+                smoothedPath.addLine(to: point)
+                
+            }
+            
+            smoothedPath.addLine(to: point2)
+        }
+        
+        smoothedPath.addLine(to: points.last!)
+        
+        return smoothedPath
     }
 }
