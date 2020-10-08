@@ -15,6 +15,7 @@
 		27280BBF252FA276003DAF86 /* PolygonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27280BBB252FA276003DAF86 /* PolygonView.swift */; };
 		27280BC0252FA276003DAF86 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27280BBC252FA276003DAF86 /* ViewController.swift */; };
 		27280BC1252FA276003DAF86 /* UIView+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27280BBE252FA276003DAF86 /* UIView+Constraints.swift */; };
+		27BC249C252FB7AB0034807F /* CGPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27BC249B252FB7AB0034807F /* CGPath.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		27280BBB252FA276003DAF86 /* PolygonView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PolygonView.swift; sourceTree = "<group>"; };
 		27280BBC252FA276003DAF86 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		27280BBE252FA276003DAF86 /* UIView+Constraints.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Constraints.swift"; sourceTree = "<group>"; };
+		27BC249B252FB7AB0034807F /* CGPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPath.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				27280BBE252FA276003DAF86 /* UIView+Constraints.swift */,
+				27BC249B252FB7AB0034807F /* CGPath.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -169,6 +172,7 @@
 			files = (
 				27280BB8252FA259003DAF86 /* AppDelegate.swift in Sources */,
 				27280BBF252FA276003DAF86 /* PolygonView.swift in Sources */,
+				27BC249C252FB7AB0034807F /* CGPath.swift in Sources */,
 				27280BC1252FA276003DAF86 /* UIView+Constraints.swift in Sources */,
 				27280BC0252FA276003DAF86 /* ViewController.swift in Sources */,
 				27280BB9252FA259003DAF86 /* SceneDelegate.swift in Sources */,

@@ -145,4 +145,13 @@ final class PolygonView: UIView {
         path.close()
         return path
     }
+    
+    private func catmullRomSmoothPath(path: UIBezierPath?) -> UIBezierPath? {
+        guard let path = path else { return nil }
+        
+        
+        let points = path.cgPath.points()
+        
+        return nil
+    }
 }
