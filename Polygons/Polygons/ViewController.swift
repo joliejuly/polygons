@@ -73,11 +73,20 @@ final class ViewController: UIViewController {
     @objc private func stepperChanged(_ stepper: UIStepper) {
         let value = Int(stepper.value)
         sidesCountLabel.text = "\(value)"
-        polygonView.showPolygon(sidesCount: value)
+        if blobSwitch.isOn {
+            polygonView.showBlob(sidesCount: value)
+        } else {
+            polygonView.showPolygon(sidesCount: value)
+        }
     }
     
     @objc private func switchChanged(_ switch: UISwitch) {
-
+        let value = Int(sidesStepper.value)
+        if blobSwitch.isOn {
+            polygonView.showBlob(sidesCount: value)
+        } else {
+            polygonView.showPolygon(sidesCount: value)
+        }
     }
 }
 
