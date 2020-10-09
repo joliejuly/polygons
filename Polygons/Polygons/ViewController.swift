@@ -25,18 +25,20 @@ final class ViewController: UIViewController {
     
     private lazy var sidesStepper: UIStepper = {
         let stepper = UIStepper()
-        stepper.minimumValue = 3
+        stepper.minimumValue = 4
         stepper.value = Double(Constants.defaultSidesCount)
         stepper.addTarget(self, action: #selector(stepperChanged), for: .valueChanged)
         return stepper
     }()
     
-    private lazy var blobSwitch: UISwitch = {
-        let switcher = UISwitch()
-        switcher.tintColor = .systemPink
-        switcher.onTintColor = .systemPink
-        switcher.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
-        return switcher
+    private lazy var distortionSlider: UISlider = {
+        let slider = UISlider()
+        slider.minimumValue = 0
+        slider.maximumValue = 1
+        slider.maximumTrackTintColor = .systemPink
+        slider.minimumTrackTintColor = .lightGray
+        slider.addTarget(self, action: #selector(sliderChanged), for: .valueChanged)
+        return slider
     }()
 
     override func viewDidLoad() {
@@ -44,7 +46,7 @@ final class ViewController: UIViewController {
         setupPolygonView()
         setupStepper()
         setupLabel()
-        setupSwitch()
+        setupSlider()
     }
     
     private func setupPolygonView() {
@@ -60,32 +62,32 @@ final class ViewController: UIViewController {
         sidesStepper.pin(to: [.bottom], of: view, offset: 40)
     }
     
+    private func setupSlider() {
+        distortionSlider.addToCenter(of: view, excluding: .y)
+        distortionSlider.pin(to: [.top, .trailing, .leading], of: view, offset: 50)
+    }
+    
     private func setupLabel() {
         sidesCountLabel.addToCenter(of: view, excluding: .y)
         sidesCountLabel.pin(to: [.bottom], of: sidesStepper, offset: 4)
     }
     
-    private func setupSwitch() {
-        blobSwitch.addToCenter(of: view, excluding: .y)
-        blobSwitch.pin(to: [.top], of: view, offset: 50)
-    }
-    
     @objc private func stepperChanged(_ stepper: UIStepper) {
-        let value = Int(stepper.value)
+        let value = Int(sidesStepper.value)
         sidesCountLabel.text = "\(value)"
-        if blobSwitch.isOn {
-            polygonView.showBlob(sidesCount: value)
-        } else {
-            polygonView.showPolygon(sidesCount: value)
-        }
+        update()
     }
     
-    @objc private func switchChanged(_ switch: UISwitch) {
+    @objc private func sliderChanged(_ switch: UISwitch) {
+        update()
+    }
+    
+    private func update() {
         let value = Int(sidesStepper.value)
-        if blobSwitch.isOn {
-            polygonView.showBlob(sidesCount: value)
-        } else {
+        if distortionSlider.value == 0 {
             polygonView.showPolygon(sidesCount: value)
+        } else {
+            polygonView.showBlob(sidesCount: value)
         }
     }
 }

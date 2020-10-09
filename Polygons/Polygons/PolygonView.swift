@@ -114,7 +114,7 @@ final class PolygonView: UIView {
             
             let cgSide = CGFloat(side)
             let cgSideCount = CGFloat(sidesCount)
-            let theta = pi + cgSide * twoPi / cgSideCount
+            let theta = pi + cgSide * twoPi / cgSideCount //
             let dTheta = twoPi / cgSideCount
             
     
