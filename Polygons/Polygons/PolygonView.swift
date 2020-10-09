@@ -18,6 +18,7 @@ final class PolygonView: UIView {
         layer.lineJoin = .round
         layer.lineCap = .round
         layer.strokeColor = UIColor.systemPink.cgColor
+        layer.contentsScale = UIScreen.main.nativeScale
         
         //layer.fillRule = .evenOdd
         layer.fillColor = UIColor.systemPink.cgColor
@@ -58,7 +59,7 @@ final class PolygonView: UIView {
         
         let contourRectangle = CGRect(x: 0, y: 0, width: width, height: width)
         let center = CGPoint(x: contourRectangle.midX, y: contourRectangle.midY)
-        let radius: CGFloat = width * 0.5
+        let radius: CGFloat = width
         
         var isFirstPoint = true
         
@@ -94,13 +95,14 @@ final class PolygonView: UIView {
     private func makeBlob(sidesCount: Int, distortion: Float) -> UIBezierPath? {
         guard sidesCount > 3 else { return nil }
         
+        let cgDistortion = CGFloat(distortion)
         let path = UIBezierPath()
         
         let width = bounds.width
         
         let contourRectangle = CGRect(x: 0, y: 0, width: width, height: width)
         let center = CGPoint(x: contourRectangle.midX, y: contourRectangle.midY)
-        let radius: CGFloat = width * 0.5
+        
         
         var isFirstPoint = true
         
@@ -109,8 +111,8 @@ final class PolygonView: UIView {
         
         for side in 0..<sidesCount {
             
-            let percent: CGFloat = CGFloat.random(in: -1...1)
-            let blobRadius: CGFloat = radius * (1 + percent)
+            let radius: CGFloat = width - width * CGFloat.random(in: 0...cgDistortion)
+            let blobRadius: CGFloat = radius - radius * CGFloat.random(in: 0...cgDistortion)
             
             let cgSide = CGFloat(side)
             let cgSideCount = CGFloat(sidesCount)

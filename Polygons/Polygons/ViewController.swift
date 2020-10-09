@@ -50,7 +50,7 @@ final class ViewController: UIViewController {
     }
     
     private func setupPolygonView() {
-        polygonView.setSize(width: 300, height: 300)
+        polygonView.setSize(width: 100, height: 100)
         polygonView.addToCenter(of: view)
         
         polygonView.layoutIfNeeded()
