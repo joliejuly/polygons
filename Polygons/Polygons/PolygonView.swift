@@ -42,8 +42,8 @@ final class PolygonView: UIView {
         polygonLayer.path = path.cgPath
     }
     
-    func showBlob(sidesCount: Int) {
-        guard let path = makeBlob(sidesCount:sidesCount) else { return }
+    func showBlob(sidesCount: Int, distortion: Float) {
+        guard let path = makeBlob(sidesCount: sidesCount, distortion: distortion) else { return }
         
         let smoothed = catmullRomSmoothPath(path: path)
         polygonLayer.path = smoothed?.cgPath
@@ -91,7 +91,7 @@ final class PolygonView: UIView {
     }
     
     
-    private func makeBlob(sidesCount: Int) -> UIBezierPath? {
+    private func makeBlob(sidesCount: Int, distortion: Float) -> UIBezierPath? {
         guard sidesCount > 3 else { return nil }
         
         let path = UIBezierPath()

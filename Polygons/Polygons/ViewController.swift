@@ -87,7 +87,7 @@ final class ViewController: UIViewController {
         if distortionSlider.value == 0 {
             polygonView.showPolygon(sidesCount: value)
         } else {
-            polygonView.showBlob(sidesCount: value)
+            polygonView.showBlob(sidesCount: value, distortion: distortionSlider.value)
         }
     }
 }
