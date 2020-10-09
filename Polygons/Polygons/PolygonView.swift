@@ -44,10 +44,10 @@ final class PolygonView: UIView {
     
     func showBlob(sidesCount: Int, distortion: Float) {
         let path = makeBlobTemplate(sidesCount: sidesCount, distortion: distortion)
+        //polygonLayer.path = path?.cgPath
 
-       // let smoothed = catmullRomSmoothPath(path: path!)
-        polygonLayer.path = path?.cgPath
-        //polygonLayer.path = smoothed?.cgPath
+        let smoothed = catmullRomSmoothPath(path: path!)
+        polygonLayer.path = smoothed?.cgPath
     }
 
     private func makePolygon(sidesCount: Int) -> UIBezierPath? {
@@ -141,99 +141,33 @@ final class PolygonView: UIView {
         return path
     }
     
-    private func makeBlob(sidesCount: Int, distortion: Float) -> UIBezierPath? {
-        guard sidesCount > 3 else { return nil }
-        
-        let cgDistortion = CGFloat(distortion)
-        let path = UIBezierPath()
-        
-        let width = bounds.width
-        
-        let contourRectangle = CGRect(x: 0, y: 0, width: width, height: width)
-        let center = CGPoint(x: contourRectangle.midX, y: contourRectangle.midY)
-        
-        
-        var isFirstPoint = true
-        
-        let pi = CGFloat.pi
-        let twoPi = pi * 2
-        
-        var firstPoint = CGPoint()
-        
-        for side in 0..<sidesCount {
-            
-            let radius: CGFloat = width - width * CGFloat.random(in: 0...cgDistortion)
-            let blobRadius: CGFloat = radius - radius * CGFloat.random(in: 0...cgDistortion)
-            
-            let cgSide = CGFloat(side)
-            let cgSideCount = CGFloat(sidesCount)
-            let theta = pi + cgSide * twoPi / cgSideCount //
-            let dTheta = twoPi / cgSideCount
-            
-    
-            if isFirstPoint {
-                var point = CGPoint()
-                point.x = center.x + radius * sin(theta)
-                point.y = center.y + radius * cos(theta)
-                path.move(to: point)
-                firstPoint = point
-                isFirstPoint = false
-            }
-            
-            var controlPoint1 = CGPoint()
-            
-            controlPoint1.x = center.x + blobRadius * sin(theta + dTheta / 3)
-            controlPoint1.y = center.y + blobRadius * cos(theta + dTheta / 3)
-            
-            var controlPoint2 = CGPoint()
-            
-            controlPoint2.x = center.x + blobRadius * sin(theta + 2 * dTheta / 3)
-            controlPoint2.y = center.y + blobRadius * cos(theta + 2 * dTheta / 3)
-
-            var point = CGPoint()
-            point.x = center.x + radius * sin(theta + dTheta)
-            point.y = center.y + radius * cos(theta + dTheta)
-            
-            if side == sidesCount - 1 {
-                path.addCurve(to: firstPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
-            } else {
-                path.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
-            }
-        }
-        
-        path.close()
-        return path
-    }
-    
-    private func catmullRomSmoothPath(path: UIBezierPath?) -> UIBezierPath? {
+    private func catmullRomSmoothPath(path: UIBezierPath?, isClosed: Bool = true) -> UIBezierPath? {
         guard let path = path else { return nil }
-        
-        let granularity = 150
-        
+    
         var points = path.cgPath.points()
+        guard points.count >= 4 else { return nil }
         
-        points.insert(points.first!, at: 0)
-        points.append(points.last!)
+        let granularity = 20
         
         let smoothedPath = UIBezierPath()
         smoothedPath.lineWidth = path.lineWidth
         
-        // draw first three points
-        
-        smoothedPath.move(to: points.first!)
-        
-        for index in 1...3 {
-            let point = points[index]
-            smoothedPath.addLine(to: point)
-        }
-        
         // draw other points
         
-        for index in 4..<points.count {
-            let point0 = points[index - 3]
-            let point1 = points[index - 2]
-            let point2 = points[index - 1]
-            let point3 = points[index]
+        for index in 0..<points.count {
+//            let point0 = points[index - 3]
+//            let point1 = points[index - 2]
+//            let point2 = points[index - 1]
+//            let point3 = points[index]
+            
+            let point0 = points[index - 1 < 0 ? points.count - 1 : index - 1]
+            let point1 = points[index]
+            let point2 = points[(index + 1) % points.count]
+            let point3 = points[(index + 2) % points.count]
+            
+            if index == 0 {
+                smoothedPath.move(to: point0)
+            }
             
             for granularityValue in 1..<granularity {
                 let t = CGFloat(granularityValue) * (1.0 / CGFloat(granularity))
@@ -257,13 +191,12 @@ final class PolygonView: UIView {
                 point.y = 0.5 * (yPlain + yQuadripled + yCubed)
                 
                 smoothedPath.addLine(to: point)
-                
             }
             
             smoothedPath.addLine(to: point2)
         }
         
-        smoothedPath.addLine(to: points.last!)
+        //smoothedPath.addLine(to: points.last!)
         
         return smoothedPath
     }
