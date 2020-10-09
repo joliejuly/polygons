@@ -12,7 +12,7 @@ final class PolygonView: UIView {
     private lazy var polygonLayer: CAShapeLayer = {
         let layer = CAShapeLayer()
         
-        layer.lineWidth = 10
+        layer.lineWidth = 5
         layer.miterLimit = 0
         
         layer.lineJoin = .round
@@ -20,8 +20,7 @@ final class PolygonView: UIView {
         layer.strokeColor = UIColor.systemPink.cgColor
         layer.contentsScale = UIScreen.main.nativeScale
         
-        //layer.fillRule = .evenOdd
-        layer.fillColor = UIColor.systemPink.cgColor
+        layer.fillColor = UIColor.white.cgColor
         
         return layer
     }()
@@ -44,10 +43,13 @@ final class PolygonView: UIView {
     }
     
     func showBlob(sidesCount: Int, distortion: Float) {
-        guard let path = makeBlob(sidesCount: sidesCount, distortion: distortion) else { return }
+        let path = makeBlobTemplate(sidesCount: sidesCount, distortion: distortion)
+        polygonLayer.path = path?.cgPath
         
-        let smoothed = catmullRomSmoothPath(path: path)
-        polygonLayer.path = smoothed?.cgPath
+        
+//        guard let path = makeBlob(sidesCount: sidesCount, distortion: distortion) else { return }
+//        let smoothed = catmullRomSmoothPath(path: path)
+//        polygonLayer.path = smoothed?.cgPath
     }
 
     private func makePolygon(sidesCount: Int) -> UIBezierPath? {
@@ -91,6 +93,61 @@ final class PolygonView: UIView {
         return path
     }
     
+    private func makeBlobTemplate(sidesCount: Int, distortion: Float) -> UIBezierPath? {
+        guard sidesCount > 3 else { return nil }
+        let cgDistortion = CGFloat(distortion)
+        let path = UIBezierPath()
+        
+        let width = bounds.width
+        
+        let contourRectangle = CGRect(x: 0, y: 0, width: width, height: width)
+        let center = CGPoint(x: contourRectangle.midX, y: contourRectangle.midY)
+        
+        
+        var isFirstPoint = true
+        
+        let pi = CGFloat.pi
+        let twoPi = pi * 2
+        
+        for side in 0..<sidesCount {
+            
+            let radius: CGFloat = width - width * CGFloat.random(in: 0...cgDistortion)
+            let blobRadius: CGFloat = radius - radius * CGFloat.random(in: 0...cgDistortion)
+            
+            let cgSide = CGFloat(side)
+            let cgSideCount = CGFloat(sidesCount)
+            let theta = pi + cgSide * twoPi / cgSideCount //
+            let dTheta = twoPi / cgSideCount
+            
+    
+            if isFirstPoint {
+                var point = CGPoint()
+                point.x = center.x + radius * sin(theta)
+                point.y = center.y + radius * cos(theta)
+                path.move(to: point)
+                isFirstPoint = false
+            }
+            
+            var controlPoint1 = CGPoint()
+            
+            controlPoint1.x = center.x + blobRadius * sin(theta + dTheta / 3)
+            controlPoint1.y = center.y + blobRadius * cos(theta + dTheta / 3)
+            
+            var controlPoint2 = CGPoint()
+            
+            controlPoint2.x = center.x + blobRadius * sin(theta + 2 * dTheta / 3)
+            controlPoint2.y = center.y + blobRadius * cos(theta + 2 * dTheta / 3)
+
+            var point = CGPoint()
+            point.x = center.x + radius * sin(theta + dTheta)
+            point.y = center.y + radius * cos(theta + dTheta)
+            
+            path.addLine(to: point)
+        }
+        
+        path.close()
+        return path
+    }
     
     private func makeBlob(sidesCount: Int, distortion: Float) -> UIBezierPath? {
         guard sidesCount > 3 else { return nil }
