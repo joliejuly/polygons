@@ -44,10 +44,10 @@ final class PolygonView: UIView {
     
     func showBlob(sidesCount: Int, distortion: Float) {
         let path = makeBlobTemplate(sidesCount: sidesCount, distortion: distortion)
-        //polygonLayer.path = path?.cgPath
+        polygonLayer.path = path?.cgPath
 
-        let smoothed = catmullRomSmoothPath(path: path!)
-        polygonLayer.path = smoothed?.cgPath
+//        let smoothed = catmullRomSmoothPath(path: path!)
+//        polygonLayer.path = smoothed?.cgPath
     }
 
     private func makePolygon(sidesCount: Int) -> UIBezierPath? {
