@@ -147,27 +147,37 @@ final class PolygonView: UIView {
         var points = path.cgPath.points()
         guard points.count >= 4 else { return nil }
         
-        let granularity = 20
+        let granularity = 50
         
         let smoothedPath = UIBezierPath()
         smoothedPath.lineWidth = path.lineWidth
         
+        
+        smoothedPath.move(to: points.first!)
+        
         // draw other points
         
-        for index in 0..<points.count {
+        for index in 1..<points.count {
 //            let point0 = points[index - 3]
 //            let point1 = points[index - 2]
 //            let point2 = points[index - 1]
 //            let point3 = points[index]
             
-            let point0 = points[index - 1 < 0 ? points.count - 1 : index - 1]
-            let point1 = points[index]
-            let point2 = points[(index + 1) % points.count]
-            let point3 = points[(index + 2) % points.count]
+//            let point0 = points[index - 1 < 0 ? points.count - 1 : index - 1]
+//            let point1 = points[index]
+//            let point2 = points[(index + 1) % points.count]
+//            let point3 = points[(index + 2) % points.count]
+//
+            let point0 = points[index - 2 < 0 ? points.count - 2 : index - 2]
+            let point1 = points[index - 1 < 0 ? points.count - 1 : index - 1]
+            let point2 = points[index]
+            let point3 = points[(index + 1) % points.count]
             
-            if index == 0 {
-                smoothedPath.move(to: point0)
-            }
+//            let point0 = points[index - 3 < 0 ? points.count - 3 : index - 3]
+//            let point1 = points[index - 2 < 0 ? points.count - 2 : index - 2]
+//            let point2 = points[index - 1 < 0 ? points.count - 1 : index - 1]
+//            let point3 = points[index]
+//
             
             for granularityValue in 1..<granularity {
                 let t = CGFloat(granularityValue) * (1.0 / CGFloat(granularity))
@@ -183,7 +193,6 @@ final class PolygonView: UIView {
     
                 point.x = 0.5 * (xPlain + xQuadripled + xCubed)
                 
-                
                 let yPlain = 2 * point1.y + (point2.y - point0.y) * t
                 let yQuadripled = (2 * point0.y - 5 * point1.y + 4 * point2.y - point3.y) * tt
                 let yCubed = (3 * point1.y - point0.y - 3 * point2.y + point3.y) * ttt
@@ -193,9 +202,10 @@ final class PolygonView: UIView {
                 smoothedPath.addLine(to: point)
             }
             
-            smoothedPath.addLine(to: point2)
+            //smoothedPath.addLine(to: point2)
         }
         
+        //smoothedPath.close()
         //smoothedPath.addLine(to: points.last!)
         
         return smoothedPath
