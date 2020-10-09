@@ -109,6 +109,8 @@ final class PolygonView: UIView {
         let pi = CGFloat.pi
         let twoPi = pi * 2
         
+        var firstPoint = CGPoint()
+        
         for side in 0..<sidesCount {
             
             let radius: CGFloat = width - width * CGFloat.random(in: 0...cgDistortion)
@@ -125,6 +127,7 @@ final class PolygonView: UIView {
                 point.x = center.x + radius * sin(theta)
                 point.y = center.y + radius * cos(theta)
                 path.move(to: point)
+                firstPoint = point
                 isFirstPoint = false
             }
             
@@ -138,12 +141,15 @@ final class PolygonView: UIView {
             controlPoint2.x = center.x + blobRadius * sin(theta + 2 * dTheta / 3)
             controlPoint2.y = center.y + blobRadius * cos(theta + 2 * dTheta / 3)
 
-            
             var point = CGPoint()
             point.x = center.x + radius * sin(theta + dTheta)
             point.y = center.y + radius * cos(theta + dTheta)
             
-            path.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+            if side == sidesCount - 1 {
+                path.addCurve(to: firstPoint, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+            } else {
+                path.addCurve(to: point, controlPoint1: controlPoint1, controlPoint2: controlPoint2)
+            }
         }
         
         path.close()
@@ -153,7 +159,7 @@ final class PolygonView: UIView {
     private func catmullRomSmoothPath(path: UIBezierPath?) -> UIBezierPath? {
         guard let path = path else { return nil }
         
-        let granularity = 50
+        let granularity = 150
         
         var points = path.cgPath.points()
         
