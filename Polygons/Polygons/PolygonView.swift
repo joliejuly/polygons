@@ -44,12 +44,10 @@ final class PolygonView: UIView {
     
     func showBlob(sidesCount: Int, distortion: Float) {
         let path = makeBlobTemplate(sidesCount: sidesCount, distortion: distortion)
+
+       // let smoothed = catmullRomSmoothPath(path: path!)
         polygonLayer.path = path?.cgPath
-        
-        
-//        guard let path = makeBlob(sidesCount: sidesCount, distortion: distortion) else { return }
-//        let smoothed = catmullRomSmoothPath(path: path)
-//        polygonLayer.path = smoothed?.cgPath
+        //polygonLayer.path = smoothed?.cgPath
     }
 
     private func makePolygon(sidesCount: Int) -> UIBezierPath? {
@@ -103,46 +101,40 @@ final class PolygonView: UIView {
         let contourRectangle = CGRect(x: 0, y: 0, width: width, height: width)
         let center = CGPoint(x: contourRectangle.midX, y: contourRectangle.midY)
         
-        
-        var isFirstPoint = true
-        
         let pi = CGFloat.pi
         let twoPi = pi * 2
+        
+        var firstPoint = CGPoint()
         
         for side in 0..<sidesCount {
             
             let radius: CGFloat = width - width * CGFloat.random(in: 0...cgDistortion)
-            let blobRadius: CGFloat = radius - radius * CGFloat.random(in: 0...cgDistortion)
             
             let cgSide = CGFloat(side)
             let cgSideCount = CGFloat(sidesCount)
-            let theta = pi + cgSide * twoPi / cgSideCount //
+            let theta = pi + cgSide * twoPi / cgSideCount
             let dTheta = twoPi / cgSideCount
             
-    
-            if isFirstPoint {
+            if side == 0 {
                 var point = CGPoint()
+                
                 point.x = center.x + radius * sin(theta)
                 point.y = center.y + radius * cos(theta)
+                
                 path.move(to: point)
-                isFirstPoint = false
+                firstPoint = point
             }
             
-            var controlPoint1 = CGPoint()
-            
-            controlPoint1.x = center.x + blobRadius * sin(theta + dTheta / 3)
-            controlPoint1.y = center.y + blobRadius * cos(theta + dTheta / 3)
-            
-            var controlPoint2 = CGPoint()
-            
-            controlPoint2.x = center.x + blobRadius * sin(theta + 2 * dTheta / 3)
-            controlPoint2.y = center.y + blobRadius * cos(theta + 2 * dTheta / 3)
-
             var point = CGPoint()
             point.x = center.x + radius * sin(theta + dTheta)
             point.y = center.y + radius * cos(theta + dTheta)
             
-            path.addLine(to: point)
+            
+            if side == sidesCount - 1 {
+                path.addLine(to: firstPoint)
+            } else {
+                path.addLine(to: point)
+            }
         }
         
         path.close()
